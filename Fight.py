@@ -19,39 +19,46 @@ class Character:
     def __init__(self, ChName, power=1):
         self.name = ChName
         self.strikePower = power
+        self.strikeSound = 250 * power + 1000
         print('Level %d %s entered arena!' % (self.strikePower, self.name))
         
     def printHP(self):
         print ('%s health points dropped to %d !' % (self.name, self.hp if self.hp > 0 else 0)) # осторожно, 2 условие - тренарный оператор
+        sleep(0.5)
         
     def attack(self):
         print ('\t%s attacked' % self.name)
+        Beep(self.strikeSound, 25)
         return (RandomNumber() * self.strikePower)
         
     def hit(self, hitpower):
         self.hp = self.hp - hitpower
         self.printHP()
         
-    # def __del__(self):
-        # print('класс ' + self.name + ' удалён')
+    def __del__(self):
+        print(self.name, 'left arena' if self.hp > 0 else 'body was carried from arena')
 
 #---Main---
-Hero1 = Character('Barbarian', RandomNumber(1, 5+1))
-Hero2 = Character('Skeleton', RandomNumber(1, 5+1))
-print('\nFight begins!\n')
+retry = 'Y'
+while retry == 'Y':
+    
+    Hero1 = Character('Barbarian', RandomNumber(1, 5+1))
+    Hero2 = Character('Skeleton', RandomNumber(1, 5+1))
+    print('\nFight begins!\n')
 
-while True:
-    Hero2.hit(Hero1.attack())
-    Beep(1500, 25)
-    if Hero2.hp < 1: break
-    sleep(0.5)
-    Hero1.hit(Hero2.attack())
-    Beep(2000, 25)
-    if Hero1.hp < 1: break
-    sleep(0.5)
+    while True:
+        Hero2.hit(Hero1.attack())
+        if Hero2.hp < 1: break
+        Hero1.hit(Hero2.attack())
+        if Hero1.hp < 1: break
 
-if Hero1.hp > 0:
-    print('\n %s Wins!' % Hero1.name)
-else:
-    print('\n %s Wins!' % Hero2.name)
+    if Hero1.hp > 0:
+        print('\n\t%s Wins!\n' % Hero1.name)
+    else:
+        print('\n\t%s Wins!\n' % Hero2.name)
 
+    del Hero1
+    del Hero2
+
+    retry = input('\nCall new fighters? (Y/N)').upper()
+    
