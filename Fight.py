@@ -4,13 +4,12 @@
 from random import randrange
 from time import sleep
 from winsound import Beep
-
 #---Global---
 
 #---Func---
 def RandomNumber(R_min=1, R_max=10+1):
     '''Функция RandomNumber
-    Выдаёт случайное целое число в заданном промежутке.'''
+    Выдаёт случайное целое число в заданном промежутке или от 1 до 10.'''
     return randrange(R_min, R_max)
     
 #---Class---
@@ -19,11 +18,11 @@ class Character:
     def __init__(self, ChName, power=1):
         self.name = ChName
         self.strikePower = power
-        self.strikeSound = 250 * power + 1000
+        self.strikeSound = 250 * power + 1250
         print('Level %d %s entered arena!' % (self.strikePower, self.name))
         
     def printHP(self):
-        print ('%s health points dropped to %d !' % (self.name, self.hp if self.hp > 0 else 0)) # осторожно, 2 условие - тренарный оператор
+        print ('%s health points dropped to %d !' % (self.name, self.hp if self.hp > 0 else 0)) # второе условие это тренарный оператор
         sleep(0.5)
         
     def attack(self):
@@ -36,7 +35,7 @@ class Character:
         self.printHP()
         
     def __del__(self):
-        print(self.name, 'left arena' if self.hp > 0 else 'body was carried from arena')
+        print(self.name, 'left arena' if self.hp > 0 else 'body was removed from arena')
 
 #---Main---
 retry = 'Y'
@@ -60,5 +59,6 @@ while retry == 'Y':
     del Hero1
     del Hero2
 
-    retry = input('\nCall new fighters? (Y/N)').upper()
+    retry = input('\nNew fight? (Y/N) ').upper()
     
+#---
