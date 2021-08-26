@@ -78,4 +78,4 @@ while retry == 'Y':
 
     retry = input('\nNew fight? (Y/N) ').upper()
     
-#---
+#----
