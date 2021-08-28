@@ -28,11 +28,24 @@ def Out_ColourSet(colour, text):
     return getattr(Fore,colour) + text + Style.RESET_ALL
 
 def areneinit(lenghtOfArena):
-    arena = ['|']
-    for i in range(lenghtOfArena):
-        arena += '_'
-    arena += '|'
-    return arena
+    LessThenOne = True
+    while LessThenOne:
+        if lenghtOfArena > 1:
+            arena = ['|']
+            for i in range(lenghtOfArena):
+                arena += '_'
+            arena += '|'
+            LessThenOne = False
+            return arena
+        else:
+            lenghtOfArena = int(input(Out_ColourSet('CYAN', "Write number more then 1:")))
+
+def probability(percent):
+    randomNum = randrange(1, 100+1)
+    if randomNum <= percent:
+        return True
+    else:
+        return False
 
 
 #---Class---
@@ -70,7 +83,7 @@ retry = 'Y'
 
 while retry == 'Y':
 
-    arena = areneinit(int(input("Print arena lenght:")))
+    arena = areneinit(int(input(Out_ColourSet('CYAN', "Print arena lenght:"))))
     print(*arena)
     Heroes = [["Barbarian", 1, 5+1], ["Skeleton", 1, 5+1]] #Список персонажей
     ChooseChar = int(input("Characters:\n 1.Barbarian\n 2.Skeleton\n 3.Random\nChose your Hero: ")) - 1 #(Choose_Character) Выбор персонажа
@@ -120,7 +133,7 @@ while retry == 'Y':
             elif Choose_action == 2:
                 print(Out_GREEN("\nYou wait patiently\n"))
         elif distance_between_Characters == 1 and Hero1.position < Hero2.position and Hero1.position > 1:
-            Choose_action = int(input("\nActions:\n1. Move to the left\n2. Hit " + Hero2.name + " \nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Move to the left\n2. Hit " + Hero2.name + " \n3. Push past the "+ Hero2.name + " (40%)\nChoose action:"))
             if Choose_action == 1:
                 arena[Hero1.position] = "_"
                 Hero1.position -= 1
@@ -129,11 +142,39 @@ while retry == 'Y':
             if Choose_action == 2:
                 Hero2.hit(Hero1.attack())
                 if Hero2.hp < 1: break
-        elif distance_between_Characters == 1 and Hero1.position < Hero2.position and Hero1.position == 1:
-            Choose_action = int(input("\nActions:\n1. Hit " + Hero2.name + " \nChoose action:"))
+            if Choose_action == 3:
+                sucsess = probability(40)
+                if sucsess == True:
+                    arena[Hero1.position] = "_"
+                    Hero1.position += 2
+                    arena[Hero1.position] = Out_GREEN(Hero)
+        elif distance_between_Characters == 1 and Hero1.position > Hero2.position and Hero1.position > 1:
+            Choose_action = int(input("\nActions:\n1. Move to the right\n2. Hit " + Hero2.name + " \n3. Push past the "+ Hero2.name + " (40%)\nChoose action:"))
+            if Choose_action == 1:
+                arena[Hero1.position] = "_"
+                Hero1.position += 1
+                distance_between_Characters = abs(Hero1.position - Hero2.position)
+                arena[Hero1.position] = Out_GREEN(Hero)
+            if Choose_action == 2:
+                Hero2.hit(Hero1.attack())
+                if Hero2.hp < 1: break
+            if Choose_action == 3:
+                sucsess = probability(40)
+                if sucsess == True:
+                    arena[Hero1.position] = "_"
+                    Hero1.position -= 2
+                    arena[Hero1.position] = Out_GREEN(Hero)
+        elif (distance_between_Characters == 1 and Hero1.position < Hero2.position and Hero1.position == 1) or (distance_between_Characters == 1 and Hero1.position > Hero2.position and Hero1.position == len(arena) - 2):
+            Choose_action = int(input("\nActions:\n1. Hit " + Hero2.name + " \n2. Push past the "+ Hero2.name + " (40%)\nChoose action:"))
             if Choose_action == 1:
                 Hero2.hit(Hero1.attack())
                 if Hero2.hp < 1: break
+            if Choose_action == 2:
+                sucsess = probability(40)
+                if sucsess == True:
+                    arena[Hero1.position] = "_"
+                    Hero1.position += 2
+                    arena[Hero1.position] = Out_GREEN(Hero)
 
         if distance_between_Characters > 1 and (Hero2.position > 1 and Hero2.position < len(arena)-2):
             if Hero1.position < Hero2.position:
