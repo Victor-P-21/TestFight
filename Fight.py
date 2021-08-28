@@ -27,12 +27,13 @@ def Out_ColourSet(colour, text):
 #---Class---
 class Character:
     hp = 100
-    def __init__(self, ChName, colour, power=1, position = 5 ):
+    def __init__(self, ChName, colour, power=1, position = 5, HeroType = "Bot" ):
         self.name = ChName
         self.strikePower = power
         self.colour = colour
         self.strikeSound = 250 * power + 1250
         self.position =  position
+        self.HeroType = HeroType
         print('Level %d %s entered arena!' % (self.strikePower, Out_ColourSet(self.colour, self.name)))
         
     def printHP(self):
@@ -40,7 +41,7 @@ class Character:
         sleep(0.5)
         
     def attack(self):
-        print(Out_ColourSet(self.colour, '\t%s attacked' % self.name))
+        print(Out_ColourSet(self.colour, '\n\t%s attacked' % self.name))
         
         Beep(self.strikeSound, 25)
         return (RandomNumber() * self.strikePower)
@@ -67,7 +68,7 @@ while retry == 'Y':
     print()
     if ChooseChar == 2:
         ChoseChar = RandomNumber(1, 3) - 1
-    Hero1 = Character(Heroes[ChooseChar][0], 'GREEN', RandomNumber(Heroes[ChooseChar][1], Heroes[ChooseChar][2]), 1)   #Это герой которого выбирает игрок, все данные берутся из списка Heros, по данному персонажу
+    Hero1 = Character(Heroes[ChooseChar][0], 'GREEN', RandomNumber(Heroes[ChooseChar][1], Heroes[ChooseChar][2]), 1, "Player")   #Это герой которого выбирает игрок, все данные берутся из списка Heros, по данному персонажу
     Hero2 = Character('Skeleton', 'RED', RandomNumber(1, 5+1))
     distance_between_Characters = abs(Hero1.position - Hero2.position)
     arena[Hero1.position] = Out_GREEN(Hero)
@@ -78,56 +79,85 @@ while retry == 'Y':
 
     while True:
         if distance_between_Characters > 1 and (Hero1.position > 1 and Hero1.position < 5):
-            Choose_action = int(input("Actions:\n1. Move to the right\n2. Move to the left\nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Move to the right\n2. Move to the left\n3. Stand still\nChoose action:"))
             if Choose_action == 1:
                 arena[Hero1.position] = "_"
                 Hero1.position += 1
                 distance_between_Characters = abs(Hero1.position - Hero2.position)
                 arena[Hero1.position] = Out_GREEN(Hero)
-                print(*arena)
             elif Choose_action == 2:
                 arena[Hero1.position] = "_"
                 Hero1.position -= 1
                 distance_between_Characters = abs(Hero1.position - Hero2.position)
                 arena[Hero1.position] = Out_GREEN(Hero)
-                print(*arena)
+            elif Choose_action == 3:
+                print(Out_GREEN("\nYou wait patiently\n"))
         elif distance_between_Characters > 1 and Hero1.position == 5:
-            Choose_action = int(input("Actions:\n1. Move to the left\nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Move to the left\n2. Stand still\nChoose action:\n"))
             if Choose_action == 1:
                 arena[Hero1.position] = "_"
                 Hero1.position -= 1
                 distance_between_Characters = abs(Hero1.position - Hero2.position)
                 arena[Hero1.position] = Out_GREEN(Hero)
-                print(*arena)
+            elif Choose_action == 2:
+                print(Out_GREEN("\nYou wait patiently\n"))
         elif distance_between_Characters > 1 and Hero1.position == 1:
-            Choose_action = int(input("Actions:\n1. Move to the right\nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Move to the right\n2. Stand still\nChoose action:"))
             if Choose_action == 1:
                 arena[Hero1.position] = "_"
                 Hero1.position += 1
                 distance_between_Characters = abs(Hero1.position - Hero2.position)
                 arena[Hero1.position] = Out_GREEN(Hero)
-                print(*arena)
+            elif Choose_action == 2:
+                print(Out_GREEN("\nYou wait patiently\n"))
         elif distance_between_Characters == 1 and Hero1.position < Hero2.position and Hero1.position > 1:
-            Choose_action = int(input("Actions:\n1. Move to the left\n2. Hit " + Hero2.name + " \nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Move to the left\n2. Hit " + Hero2.name + " \nChoose action:"))
             if Choose_action == 1:
                 arena[Hero1.position] = "_"
                 Hero1.position -= 1
                 distance_between_Characters = abs(Hero1.position - Hero2.position)
                 arena[Hero1.position] = Out_GREEN(Hero)
-                print(*arena)
             if Choose_action == 2:
                 Hero2.hit(Hero1.attack())
                 if Hero2.hp < 1: break
         elif distance_between_Characters == 1 and Hero1.position < Hero2.position and Hero1.position == 1:
-            Choose_action = int(input("Actions:\n1. Hit " + Hero2.name + " \nChoose action:"))
+            Choose_action = int(input("\nActions:\n1. Hit " + Hero2.name + " \nChoose action:"))
             if Choose_action == 1:
                 Hero2.hit(Hero1.attack())
                 if Hero2.hp < 1: break
+
+        if distance_between_Characters > 1 and (Hero2.position > 1 and Hero2.position < 5):
+            if Hero1.position < Hero2.position:
+                arena[Hero2.position] = "_"
+                Hero2.position -= 1
+                distance_between_Characters = abs(Hero2.position - Hero1.position)
+                arena[Hero2.position] = Out_RED(Hero)
+            else:
+                arena[Hero2.position] = "_"
+                Hero2.position += 1
+                distance_between_Characters = abs(Hero1.position - Hero2.position)
+                arena[Hero2.position] = Out_RED(Hero)
+        elif distance_between_Characters > 1 and Hero2.position == 5:
+            arena[Hero2.position] = "_"
+            Hero2.position -= 1
+            distance_between_Characters = abs(Hero1.position - Hero2.position)
+            arena[Hero2.position] = Out_RED(Hero)
+        elif distance_between_Characters > 1 and Hero2.position == 1:
+            arena[Hero2.position] = "_"
+            Hero2.position += 1
+            distance_between_Characters = abs(Hero1.position - Hero2.position)
+            arena[Hero2.position] = Out_RED(Hero)
+        elif distance_between_Characters == 1:
+            Hero1.hit(Hero2.attack())
+            if Hero1.hp < 1: break
+        print(*arena)
 
     if Hero1.hp > 0:
         print(Out_GREEN('\n\t%s Wins!\n' % Hero1.name))
     else:
         print(Out_RED('\n\t%s Wins!\n' % Hero2.name))
+
+    arena = ["|", "_", "_", "_", "_", "_", "|"]
 
     del Hero1
     del Hero2
