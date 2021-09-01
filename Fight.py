@@ -51,7 +51,7 @@ def Chanse_Сheck(chance):                                   #! либо опи�
     else: return False
 
 def Move_Chooser(fromWho=1, toWho=1):       # в разработке
-    print('1. Move towards enemy' if abs(fightArena.enemyPosition-fightArena.playerPosition) != 1 else '1. Move towards enemy (not available)')     # тупо проще редактировать ряд
+    print('1. Move towards enemy' if abs(fightArena.enemyPosition-fightArena.playerPosition) != 1 else '1. Move towards enemy (Enemy blocking way)')     # тупо проще редактировать ряд
     print('2. Move from enemy')
     print('3. Hit enemy')
     print('4. Try to sneak past enemy')
@@ -60,10 +60,11 @@ def Move_Chooser(fromWho=1, toWho=1):       # в разработке
     if choice == 1:     fightArena.Move(1,'Player')
     elif choice == 2:   fightArena.Move(-1,'Player')
     elif choice == 3:   Hero2.Hit(Hero1.Attack())
-    elif choice == 4:   fightArena.Move(0,'Player') # пока не реализована функция сёба (тупо ставит на ячейку +2)
+    elif choice == 4:   fightArena.Move(0,'Player') # пока не реализована функция сёба (тупо ставит на ячейку +2 или произвольную)
 
-def NPC_Move(fromWho=1, toWho=1):       # в разработке
+def NPC_Logic(fromWho=1, toWho=1):       # в разработке
     if abs(fightArena.enemyPosition-fightArena.playerPosition) != 1:
+        print(Hero2.name, 'moved')
         fightArena.Move(1,'Enemy')
     else:
         Hero1.Hit(Hero2.Attack())
@@ -91,35 +92,35 @@ class Arena:
         print(''.join(self.arenaFight))
     
     def Move(self, step, who):  #? унифицировать больше?
-        if who == 'Player':
+        if who == 'Player': # хто ходит?
             character = self.playerPosition
             opponent = self.enemyPosition
         else:
             character = self.enemyPosition
             opponent = self.playerPosition
         
-        if opponent - character < 0: 
+        if opponent - character < 0:    # Куды смотрим?
             if character - step > 0 and character - step < len(self.arena)-1: #нормалный ход
                 if character - step <= opponent: #впечатался во врага
                     self.Arena_Show()
-                    return print('Enemy blocking way')
+                    return print(Hero2.name, 'blocking way')
                 if who == 'Player': self.playerPosition = character - step #вывод по участникам в случае успеха
                 else: self.enemyPosition = character - step
                 self.Arena_Show()
             else:
                 self.Arena_Show()
-                return print(who, 'hit the wall, wall did not moved')
+                return print(Hero1.name, 'hit the wall, wall did not moved')
         else:
             if character + step > 0 and character + step < len(self.arena)-1: #нормалный ход
                 if character + step >= opponent: #впечатался во врага
                     self.Arena_Show()
-                    return print('Enemy blocking way')
+                    return print(Hero2.name, 'blocking way')
                 if who == 'Player': self.playerPosition = character + step #вывод по участникам в случае успеха
                 else: self.enemyPosition = character + step
                 self.Arena_Show()
             else:
                 self.Arena_Show()
-                return print(who,'hit the wall, wall did not moved')
+                return print(Hero1.name, 'hit the wall, wall did not moved')
 
 class Character:
     hp = 100
@@ -255,7 +256,6 @@ class Character:
             self.distanceToEnemy = abs(self.position - Hero1.position)
             Hero1.distanceToEnemy = abs(self.position - Hero1.position)
 
-
     def __del__(self):
         print(self.name, 'left arena' if self.hp > 0 else Text_Colour('LIGHTBLACK_EX', 'body was removed from arena'))
 
@@ -285,10 +285,10 @@ while retry == 'Y':
     # print(*arena)     #! а теперь попробуй обяснить что такое звёздочка перед переменной и почему так делать здесь нельзя
 
     while True:
-
+        
         Move_Chooser()
         if Hero2.hp < 1: break
-        NPC_Move()
+        NPC_Logic()
         if Hero1.hp < 1: break
 
     if Hero1.hp > 0: print(Text_Colour('GREEN', '\n\t%s Wins!\n' % Hero1.name))
